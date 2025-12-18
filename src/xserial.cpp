@@ -489,14 +489,6 @@ bool ComPort::foundComPort(void) {
 #endif
 }
 
-ComPort::ComPort() {
-    // найдем COM порт (первый в списке)
-    if (foundComPort()) {
-        openPort(autoFoundComPort, defaultBaudRate, defaultParity, defaultDataBits, defaultStopBit, defaultMode);
-    } else {
-        printf("Error: port is not found!\r\n");
-    }
-}
 
 bool ComPort::open(void) {
     close();
@@ -758,7 +750,12 @@ void ComPort::close(void) {
     }
 }
 
-std::string ComPort::getLine(char line_ending_character = 10) {
+std::string ComPort::getLine(){
+    return getLine(10);
+}
+
+
+std::string ComPort::getLine(char line_ending_character) {
     char data;
     std::string strLine = "";
     if (isOpenPort) {
@@ -770,6 +767,7 @@ std::string ComPort::getLine(char line_ending_character = 10) {
         COMSTAT comstat; // структура для получения притяных байтов
         while(1) {
             ClearCommError(hComPort, &temp, &comstat); // заполнить структуру COMSTAT
+
             numRedByte = comstat.cbInQue; //получить количество принятых байтов
             // будем проверять наличие принятого байта, пока он не появится
             while(numRedByte == 0) {
